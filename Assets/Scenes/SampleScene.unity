@@ -260,7 +260,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.134158, y: 1}
+    m_SensorSize: {x: 2.2185955, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -4462,6 +4462,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isOnGround: 1
   isRolling: 0
+  isAttacking: 0
 --- !u!70 &301132267
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -7548,13 +7549,14 @@ GameObject:
   m_Component:
   - component: {fileID: 2078156934}
   - component: {fileID: 2078156935}
+  - component: {fileID: 2078156936}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: SwordParticle1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2078156934
 Transform:
   m_ObjectHideFlags: 0
@@ -7562,14 +7564,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2078156933}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.63, y: 0.42, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.69755656, w: 0.7165297}
+  m_LocalPosition: {x: 0.85, y: 0.32, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 301132265}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -88.463}
 --- !u!212 &2078156935
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7610,18 +7612,34 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
-  m_Sprite: {fileID: -1833610920, guid: faaed08db7d3210479caf68b620b69b7, type: 3}
+  m_SortingOrder: 11
+  m_Sprite: {fileID: -1197145901, guid: faaed08db7d3210479caf68b620b69b7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.64, y: 0.64}
+  m_Size: {x: 1.92, y: 1.92}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &2078156936
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078156933}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0061298623, y: -0.22838616}
+  serializedVersion: 2
+  m_Radius: 0.73153144
 --- !u!1 &2144831201
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,8 +15,6 @@ public class GroundCheck : MonoBehaviour
     private void OnTriggerStay2D(Collider2D collider)
     {
         if (collider.CompareTag("Ground")){
-            //isOnGround = true;
-            //isJumping = false;
             PlayerController.isOnGround = true;
         }
     }
@@ -25,8 +23,6 @@ public class GroundCheck : MonoBehaviour
     {
         if (collider.CompareTag("Ground"))
         {
-            //isOnGround = true;
-            //isJumping = true;
             PlayerController.isOnGround = true;
             PlayerController.LandOnGround();
         }
@@ -36,8 +32,6 @@ public class GroundCheck : MonoBehaviour
     {
         if (collider.CompareTag("Ground"))
         {
-            //isOnGround = false;
-            //isJumping = true;
             PlayerController.isOnGround = false;
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private readonly float movementVelocity = 10;
     private readonly float jumpForce = 8;
     readonly float rollForce = 1.5f;
+    private Vector2 playerDirection = Vector2.right;
 
     [Header("Conditionals")]
     private bool canMove = true;
@@ -23,7 +25,7 @@ public class PlayerController : MonoBehaviour
     private readonly int jumpLimit = 2;
     public bool isOnGround = true;
     public bool isRolling = false;
-    private bool isShaking;
+    public bool isAttacking = false;
 
     private void Awake()
     {
@@ -36,8 +38,11 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
+        float rawHorizontalInput = Input.GetAxisRaw("Horizontal");
+        float rawVerticalInput = Input.GetAxisRaw("Vertical");
 
         Vector2 direction = new(horizontalInput, verticalInput);
+        Vector2 directionRaw = new(rawHorizontalInput, rawVerticalInput);
 
         Walk(direction);
         StartRolling();
@@ -50,6 +55,8 @@ public class PlayerController : MonoBehaviour
             jumpCount++;
             Jump();
         }
+
+        Attack(AttackDirection(playerDirection, directionRaw));
     }
 
     private void StartRolling()
@@ -130,9 +137,11 @@ public class PlayerController : MonoBehaviour
                 if (direction.x > 0 && transform.eulerAngles.y == 180) //Look right
                 {
                     transform.eulerAngles = Vector3.up * 0;
+                    playerDirection = Vector2.right;
                 }
                 else if (direction.x < 0 && transform.eulerAngles.y == 0) //Look left
                 {
+                    playerDirection = Vector2.left;
                     transform.eulerAngles = Vector3.up * 180;
                 }
             }
@@ -151,14 +160,38 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator ShakeCamera ( )
     {
-        isShaking = true;
         CinemachineBasicMultiChannelPerlin shake = _cinemachine.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         shake.m_AmplitudeGain = 10;
 
         yield return new WaitForSeconds(0.2f);
 
         shake.m_AmplitudeGain = 0;
-        isShaking = false;
+    }
+
+    private void Attack(Vector2 direction)
+    {
+        if (Input.GetButtonDown("Fire1") && !isRolling && !isAttacking)
+        {
+            isAttacking = true;
+            //_animator.SetFloat("AttackX", direction.x);
+            //_animator.SetFloat("AttackY", direction.y);
+            _animator.SetFloat("SwordAttack", 0);
+            _animator.SetBool("Attack", true);
+
+        }
+    }
+
+    private Vector2 AttackDirection(Vector2 moveDir, Vector2 rawDir)
+    {
+        if (_rigidBody.velocity.x == 0 && rawDir.y != 0)
+            return new Vector2(0, rawDir.y);
+
+        return new Vector2(moveDir.x, rawDir.y);
+    }
+    private void StopAttack()
+    {
+        isAttacking = false;
+        _animator.SetBool("Attack", false);
     }
 
     #region Old functions
