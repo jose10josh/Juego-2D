@@ -175,7 +175,15 @@ public class PlayerController : MonoBehaviour
             isAttacking = true;
             //_animator.SetFloat("AttackX", direction.x);
             //_animator.SetFloat("AttackY", direction.y);
-            _animator.SetFloat("SwordAttack", 0);
+
+            int attackDirection = 0;
+            if(Input.GetKey(KeyCode.C))
+                attackDirection = 1;
+            else if (!isOnGround)
+                attackDirection = 2;
+
+
+            _animator.SetFloat("SwordAttack", attackDirection);
             _animator.SetBool("Attack", true);
 
         }
