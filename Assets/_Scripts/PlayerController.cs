@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using Cinemachine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -7,22 +9,27 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private Animator _animator;
 
+    [Header("GameObjects")]
+    private CinemachineVirtualCamera _cinemachine;
+
     [Header("Player Statistics")]
-    private float movementVelocity = 10;
-    private float jumpForce = 8;
-    float rollForce = 1.5f;
+    private readonly float movementVelocity = 10;
+    private readonly float jumpForce = 8;
+    readonly float rollForce = 1.5f;
 
     [Header("Conditionals")]
     private bool canMove = true;
     private int jumpCount = 0;
-    private readonly int jumpLimit = 1;
+    private readonly int jumpLimit = 2;
     public bool isOnGround = true;
     public bool isRolling = false;
+    private bool isShaking;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        _cinemachine = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
     }
 
     private void Update()
@@ -33,8 +40,7 @@ public class PlayerController : MonoBehaviour
         Vector2 direction = new(horizontalInput, verticalInput);
 
         Walk(direction);
-
-        StartRolling(direction);
+        StartRolling();
 
         FixJump();
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < jumpLimit)
@@ -44,11 +50,9 @@ public class PlayerController : MonoBehaviour
             jumpCount++;
             Jump();
         }
-
-       
     }
 
-    private void StartRolling(Vector2 direction)
+    private void StartRolling()
     {
         if (Input.GetKeyDown(KeyCode.X) && !isRolling)
         {
@@ -56,6 +60,7 @@ public class PlayerController : MonoBehaviour
             _animator.SetBool("Roll", true);
             _animator.SetBool("Jump", false);
             Camera.main.GetComponent<RippleEffect>().Emit(Camera.main.WorldToViewportPoint(transform.position));
+            StartCoroutine(ShakeCamera());
         }
         if(isRolling)
         {
@@ -142,6 +147,18 @@ public class PlayerController : MonoBehaviour
     private void MovePlayer(Vector2 direction)
     {
         _rigidBody.velocity = new Vector2(direction.x, direction.y);
+    }
+
+    private IEnumerator ShakeCamera ( )
+    {
+        isShaking = true;
+        CinemachineBasicMultiChannelPerlin shake = _cinemachine.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        shake.m_AmplitudeGain = 10;
+
+        yield return new WaitForSeconds(0.2f);
+
+        shake.m_AmplitudeGain = 0;
+        isShaking = false;
     }
 
     #region Old functions
