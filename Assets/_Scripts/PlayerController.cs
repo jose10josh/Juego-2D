@@ -9,9 +9,11 @@ public class PlayerController : MonoBehaviour
     [Header("Components")]
     private Rigidbody2D _rigidBody;
     private Animator _animator;
+    private CapsuleCollider2D _capsuleCollider;
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera _cinemachine;
+    [SerializeField] private LayerMask floorLayer;
 
     [Header("Player Statistics")]
     private readonly float movementVelocity = 10;
@@ -25,12 +27,15 @@ public class PlayerController : MonoBehaviour
     private readonly int jumpLimit = 2;
     public bool isOnGround = true;
     public bool isRolling = false;
-    public bool isAttacking = false;
+    private bool isAttacking = false;
+    [SerializeField]
+    private bool isOnWall = false;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _cinemachine = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
     }
 
@@ -57,6 +62,34 @@ public class PlayerController : MonoBehaviour
         }
 
         Attack(AttackDirection(playerDirection, directionRaw));
+
+        IsOnWall();
+
+
+        if(isOnWall && Input.GetKey(KeyCode.LeftShift))
+        {
+            _rigidBody.gravityScale = 0;
+            _animator.SetBool("Climb", true);
+
+            Debug.Log($"On Wall {_rigidBody.gravityScale}");
+
+
+            if(_rigidBody.velocity == Vector2.zero)
+                _animator.SetFloat("Velocity", 0);
+            else if(rawVerticalInput != 0)
+            {
+                _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, 0);
+                _animator.SetFloat("Velocity", 1);
+
+                float climbVelocityModifier = rawVerticalInput > 0 ? 0.5f : 1;
+                _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, verticalInput * (climbVelocityModifier * movementVelocity));
+            }
+        }
+        else if(!isOnWall)
+        {
+            _rigidBody.gravityScale = 1;
+            _animator.SetBool("Climb", false);
+        }
     }
 
     private void StartRolling()
@@ -202,6 +235,28 @@ public class PlayerController : MonoBehaviour
         _animator.SetBool("Attack", false);
     }
 
+    /// <summary>
+    /// Verify is on ground alternative
+    /// Validate player is on ground using a Box cast
+    /// </ summary >
+    private void IsOnWall()
+    {
+        float extraWidth = 0.05f;
+        RaycastHit2D raycastHitLeft = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.left, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
+        RaycastHit2D raycastHitRight = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.right, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
+        //RaycastHit2D raycastHit = Physics2D.BoxCast(_capsuleCollider.bounds.center, _capsuleCollider.bounds.size, 0f, Vector2.left, extraWidth, floorLayer);
+    
+        Color rayColor = Color.red;
+        if (raycastHitLeft.collider != null || raycastHitRight.collider != null)
+            rayColor = Color.blue;
+    
+        Debug.DrawRay(_capsuleCollider.bounds.center, Vector2.left * (_capsuleCollider.bounds.extents.x + extraWidth), rayColor);
+        Debug.DrawRay(_capsuleCollider.bounds.center, Vector2.right * (_capsuleCollider.bounds.extents.x + extraWidth), rayColor);
+        //Debug.DrawRay(_boxCollider.bounds.center - new Vector3(_boxCollider.bounds.extents.x, 0), Vector2.down * (_boxCollider.bounds.extents.y + extraHeight), rayColor);
+        //Debug.DrawRay(_boxCollider.bounds.center - new Vector3(_boxCollider.bounds.extents.x, _boxCollider.bounds.extents.y + extraHeight), Vector2.right * (_boxCollider.bounds.size.x), rayColor);
+        isOnWall = raycastHitLeft.collider != null || raycastHitRight.collider != null;
+    }
+
     #region Old functions
     //[Header("Collisions")]
     //private Vector2 playerFeet = new(0, -0.65f);
@@ -220,24 +275,6 @@ public class PlayerController : MonoBehaviour
     //    }
     //}
 
-    /// <summary>
-    /// Verify is on ground alternative
-    /// Validate player is on ground using a Box cast
-    /// </summary>
-    //private void IsOnGround()
-    //{
-    //float extraHeight = 0.05f;
-    ////RaycastHit2D raycastHit = Physics2D.Raycast(_boxCollider.bounds.center, Vector2.down, _boxCollider.bounds.extents.y + extraHeight, floorLayer);
-    //RaycastHit2D raycastHit = Physics2D.BoxCast(_boxCollider.bounds.center, _boxCollider.bounds.size, 0f, Vector2.down, extraHeight, floorLayer);
 
-    //Color rayColor = Color.red;
-    //if (raycastHit.collider != null)
-    //    rayColor = Color.blue;
-
-    //Debug.DrawRay(_boxCollider.bounds.center + new Vector3(_boxCollider.bounds.extents.x, 0), Vector2.down * (_boxCollider.bounds.extents.y + extraHeight), rayColor);
-    //Debug.DrawRay(_boxCollider.bounds.center - new Vector3(_boxCollider.bounds.extents.x, 0), Vector2.down * (_boxCollider.bounds.extents.y + extraHeight), rayColor);
-    //Debug.DrawRay(_boxCollider.bounds.center - new Vector3(_boxCollider.bounds.extents.x, _boxCollider.bounds.extents.y + extraHeight), Vector2.right * (_boxCollider.bounds.size.x), rayColor);
-    //isOnGround = raycastHit.collider != null;
-    //}
     #endregion
 }
