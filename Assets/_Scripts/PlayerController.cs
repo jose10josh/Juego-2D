@@ -16,8 +16,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask floorLayer;
 
     [Header("Player Statistics")]
-    private readonly float movementVelocity = 10;
-    private readonly float jumpForce = 8;
+    private readonly float movementVelocity = 8.5f;
+    private readonly float jumpForce = 7;
     readonly float rollForce = 1.5f;
     private Vector2 playerDirection = Vector2.right;
 
@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private bool isAttacking = false;
     [SerializeField]
     private bool isOnWall = false;
+    private bool isClimbing = false;
 
     private void Awake()
     {
@@ -64,29 +65,33 @@ public class PlayerController : MonoBehaviour
         Attack(AttackDirection(playerDirection, directionRaw));
 
         IsOnWall();
+        StartClimbing(rawVerticalInput, verticalInput);
 
+        
+    }
 
-        if(isOnWall && Input.GetKey(KeyCode.LeftShift))
+    private void StartClimbing(float rawVerticalInput, float verticalInput)
+    {
+        if (isOnWall && Input.GetKey(KeyCode.LeftShift))
         {
             _rigidBody.gravityScale = 0;
             _animator.SetBool("Climb", true);
-
-            Debug.Log($"On Wall {_rigidBody.gravityScale}");
-
-
-            if(_rigidBody.velocity == Vector2.zero)
+            _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, 0);
+            jumpCount = 0;
+            isClimbing = true;
+            if (rawVerticalInput == 0)
                 _animator.SetFloat("Velocity", 0);
-            else if(rawVerticalInput != 0)
+            else if (rawVerticalInput != 0)
             {
-                _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, 0);
                 _animator.SetFloat("Velocity", 1);
 
                 float climbVelocityModifier = rawVerticalInput > 0 ? 0.5f : 1;
                 _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, verticalInput * (climbVelocityModifier * movementVelocity));
             }
         }
-        else if(!isOnWall)
+        else
         {
+            isClimbing = false;
             _rigidBody.gravityScale = 1;
             _animator.SetBool("Climb", false);
         }
@@ -94,7 +99,7 @@ public class PlayerController : MonoBehaviour
 
     private void StartRolling()
     {
-        if (Input.GetKeyDown(KeyCode.X) && !isRolling)
+        if (Input.GetKeyDown(KeyCode.X) && !isRolling && !isClimbing)
         {
             isRolling = true;
             _animator.SetBool("Roll", true);
@@ -242,10 +247,11 @@ public class PlayerController : MonoBehaviour
     private void IsOnWall()
     {
         float extraWidth = 0.05f;
-        RaycastHit2D raycastHitLeft = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.left, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
-        RaycastHit2D raycastHitRight = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.right, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
-        //RaycastHit2D raycastHit = Physics2D.BoxCast(_capsuleCollider.bounds.center, _capsuleCollider.bounds.size, 0f, Vector2.left, extraWidth, floorLayer);
-    
+        //RaycastHit2D raycastHitLeft = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.left, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
+        //RaycastHit2D raycastHitRight = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.right, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
+        RaycastHit2D raycastHitLeft = Physics2D.BoxCast(_capsuleCollider.bounds.center, new Vector2(_capsuleCollider.bounds.size.x + extraWidth, _capsuleCollider.bounds.extents.y), 0f, Vector2.left, extraWidth, floorLayer);
+        RaycastHit2D raycastHitRight = Physics2D.BoxCast(_capsuleCollider.bounds.center, new Vector2(_capsuleCollider.bounds.size.x + extraWidth, _capsuleCollider.bounds.extents.y), 0f, Vector2.right, extraWidth, floorLayer);
+
         Color rayColor = Color.red;
         if (raycastHitLeft.collider != null || raycastHitRight.collider != null)
             rayColor = Color.blue;
