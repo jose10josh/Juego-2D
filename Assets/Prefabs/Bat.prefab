@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4377656715925227024}
   - component: {fileID: 4377656715925227039}
   - component: {fileID: 4377656715925227038}
-  - component: {fileID: 3321102920035470108}
+  - component: {fileID: 1894304530622300753}
   m_Layer: 7
   m_Name: Bat
   m_TagString: Enemy
@@ -145,7 +145,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3321102920035470108
+--- !u!114 &1894304530622300753
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -154,11 +154,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 4377656715925227036}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89f178a8c5adbf844a63e65065a4cbb6, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f0d3c189b1c57445b19f33491c524a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
+  movementSpeed: 3
+  life: 9
+  damage: 2
+  awakeDistance: 6
   enemyHead: {x: 0, y: 0.75}
+  isAwake: 0
+  type: bird
+  headKill: 1
   isOnHead: 0
