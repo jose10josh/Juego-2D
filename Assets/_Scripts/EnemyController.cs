@@ -13,13 +13,15 @@ public class EnemyController : MonoBehaviour
     private PlayerController player;
     private Rigidbody2D player_rb;
     [SerializeField] private LayerMask playerMask;
+    private GameManager gameManager;
 
     [Header("Statistics")]
     [SerializeField] private float movementSpeed = 3f;
-    [SerializeField] private float life = 9;
+    [SerializeField] private float health = 9;
     [SerializeField] private int damage = 2;
     [SerializeField] private float awakeDistance = 6f;
     [SerializeField] private Vector2 enemyHead = new(0, 0.75f);
+    [SerializeField] private Vector2 headSize = new(1.5f, 0.5f);
 
     [Header("Conditionals")]
     [SerializeField] private bool isAwake;
@@ -33,6 +35,7 @@ public class EnemyController : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         player_rb = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     void Update()
@@ -72,7 +75,7 @@ public class EnemyController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            isOnHead = Physics2D.OverlapBox((Vector2)transform.position + enemyHead, new Vector2(2, 0.5f), 0f, playerMask);
+            isOnHead = Physics2D.OverlapBox((Vector2)transform.position + enemyHead, headSize, 0f, playerMask);
 
             if (isOnHead && headKill)
                 Destroy(gameObject);
@@ -90,6 +93,17 @@ public class EnemyController : MonoBehaviour
         if (player.isOnGround)
             playerForce = 2000;
         player_rb.AddForce((player.transform.position - transform.position).normalized * playerForce, ForceMode2D.Force);
+
+        gameManager.ReceiveDamage(damage);
+    }
+
+    public void ReceiveDamage(float damage)
+    {
+        health -= damage;
+
+        _rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
+        if (health <= 0)
+            Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()
@@ -97,24 +111,11 @@ public class EnemyController : MonoBehaviour
         if(headKill)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawCube((Vector2)transform.position + enemyHead, new Vector2(2, 0.5f));
+            Gizmos.DrawCube((Vector2)transform.position + enemyHead, headSize);
         }
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, awakeDistance);
     }
 
-    //public void ReceiveDamage(float damage)
-    //{
-    //    if(life > 0)
-    //    {
-    //        life -= damage;
-    //    }
-
-    //    if(life < 0)
-    //    {
-    //        Destroy(gameObject);
-    //    }
-
-    //}
 }

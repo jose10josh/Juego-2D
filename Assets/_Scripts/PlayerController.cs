@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -12,14 +13,15 @@ public class PlayerController : MonoBehaviour
     private CapsuleCollider2D _capsuleCollider;
 
     [Header("GameObjects")]
-    private CinemachineVirtualCamera _cinemachine;
     [SerializeField] private LayerMask floorLayer;
+    private GameManager gameManager;
 
-    [Header("Player Statistics")]
+    [Header("Statistics")]
     private readonly float movementVelocity = 8.5f;
     private readonly float jumpForce = 7;
-    readonly float rollForce = 1.5f;
+    private readonly float rollForce = 1.5f;
     private Vector2 playerDirection = Vector2.right;
+    
 
     [Header("Conditionals")]
     private bool canMove = true;
@@ -37,7 +39,7 @@ public class PlayerController : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
-        _cinemachine = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     private void Update()
@@ -105,7 +107,7 @@ public class PlayerController : MonoBehaviour
             _animator.SetBool("Roll", true);
             _animator.SetBool("Jump", false);
             Camera.main.GetComponent<RippleEffect>().Emit(Camera.main.WorldToViewportPoint(transform.position));
-            StartCoroutine(ShakeCamera());
+            StartCoroutine(gameManager.ShakeCamera(8, 0.3f));
         }
         if(isRolling)
         {
@@ -153,8 +155,15 @@ public class PlayerController : MonoBehaviour
     }
     private void Jump()
     {
+        if(isClimbing)
+        {
+            _rigidBody.velocity = Vector2.up * jumpForce;
+        }
+        else
+        {
+            _rigidBody.velocity = Vector2.up * jumpForce;
+        }
         //_rigidBody.velocity = new Vector2(_rigidBody.velocity.x, 0);
-        _rigidBody.velocity = Vector2.up * jumpForce;
     }
 
     /// <summary>
@@ -194,16 +203,6 @@ public class PlayerController : MonoBehaviour
     private void MovePlayer(Vector2 direction)
     {
         _rigidBody.velocity = new Vector2(direction.x, direction.y);
-    }
-
-    private IEnumerator ShakeCamera ( )
-    {
-        CinemachineBasicMultiChannelPerlin shake = _cinemachine.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        shake.m_AmplitudeGain = 10;
-
-        yield return new WaitForSeconds(0.2f);
-
-        shake.m_AmplitudeGain = 0;
     }
 
     private void Attack(Vector2 direction)
@@ -262,6 +261,7 @@ public class PlayerController : MonoBehaviour
         //Debug.DrawRay(_boxCollider.bounds.center - new Vector3(_boxCollider.bounds.extents.x, _boxCollider.bounds.extents.y + extraHeight), Vector2.right * (_boxCollider.bounds.size.x), rayColor);
         isOnWall = raycastHitLeft.collider != null || raycastHitRight.collider != null;
     }
+
 
     #region Old functions
     //[Header("Collisions")]

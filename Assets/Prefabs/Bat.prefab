@@ -161,10 +161,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   movementSpeed: 3
-  life: 9
+  health: 9
   damage: 2
-  awakeDistance: 6
+  awakeDistance: 6.5
   enemyHead: {x: 0, y: 0.75}
+  headSize: {x: 1.5, y: 0.5}
   isAwake: 0
   type: bird
   headKill: 1
