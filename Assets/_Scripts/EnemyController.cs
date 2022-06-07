@@ -7,6 +7,8 @@ public class EnemyController : MonoBehaviour
 {
     [Header("Components")]
     private Rigidbody2D _rigidBody;
+    private CapsuleCollider2D _collider;
+    private Animator _animator;
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera cinemachine;
@@ -28,11 +30,13 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private string type;
     [SerializeField] private bool headKill;
     [SerializeField] private bool isOnHead;
+    [SerializeField] private bool isDead;
 
     private void Awake()
     {
         cinemachine = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
         _rigidBody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         player_rb = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
         gameManager = FindObjectOfType<GameManager>();
@@ -43,20 +47,38 @@ public class EnemyController : MonoBehaviour
         Vector2 direction = player.transform.position - transform.position;
         float distance = Vector2.Distance(transform.position, player.transform.position);
 
-        if (distance < awakeDistance)
+        if(isDead)
         {
             if(type == "bird")
-                _rigidBody.velocity = direction.normalized * movementSpeed;
-            else
-                _rigidBody.velocity = new Vector2(direction.x, _rigidBody.velocity.y) * movementSpeed;
+            {
+                _rigidBody.gravityScale = 2;
+                _rigidBody.velocity = Vector2.down *3;
+
+                //Debug.Log(_rigidBody.velocity);
+
+                //if (_rigidBody.velocity.y == 0)
+                //{
+                //    Debug.Log("Is on GRound");
+                //    _rigidBody.Sleep();
+
+                //}
+            }
         }
         else
         {
-            _rigidBody.velocity = Vector2.zero;
+            if (distance < awakeDistance)
+            {
+                if (type == "bird")
+                    _rigidBody.velocity = direction.normalized * movementSpeed;
+                else
+                    _rigidBody.velocity = new Vector2(direction.x, _rigidBody.velocity.y) * movementSpeed;
+            }
+            else
+            {
+                _rigidBody.velocity = Vector2.zero;
+            }
+            ChangeDirection(direction.x);
         }
-
-        ChangeDirection(direction.x);
-
     }
 
     private void ChangeDirection(float directionX)
@@ -81,8 +103,8 @@ public class EnemyController : MonoBehaviour
                 Destroy(gameObject);
             else
                 DealPlayerDamage();
-            //player.ApplyDamage((transform.position - player.transform.position).normalized);
         }
+        
     }
 
     private void DealPlayerDamage()
@@ -103,7 +125,17 @@ public class EnemyController : MonoBehaviour
 
         _rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
         if (health <= 0)
-            Destroy(gameObject);
+        {
+            isDead = true;
+            _animator.SetBool("Die", true);
+        } 
+        else
+        {
+        }
+    }
+    private void DestroyEnemy()
+    {
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()

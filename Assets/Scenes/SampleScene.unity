@@ -130,6 +130,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1499297610}
     m_Modifications:
+    - target: {fileID: 1894304530622300753, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
+      propertyPath: health
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377656715925227024, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377656715925227024, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4377656715925227036, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
       propertyPath: m_Name
       value: Bat
@@ -140,11 +152,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4377656715925227037, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.7
+      value: -4.76
       objectReference: {fileID: 0}
     - target: {fileID: 4377656715925227037, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.46
+      value: 3.17
       objectReference: {fileID: 0}
     - target: {fileID: 4377656715925227037, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
       propertyPath: m_LocalPosition.z
@@ -176,6 +188,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4377656715925227037, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377656715925227039, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
+      propertyPath: m_BodyType
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -432,7 +448,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.2269573, y: 1}
+    m_SensorSize: {x: 2.2628398, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
