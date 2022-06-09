@@ -5,6 +5,18 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    private enum EnemyType // your custom enumeration
+    {
+        Bird,
+        Humanoid
+    };
+    private enum AttackList // your custom enumeration
+    {
+        Close,
+        Range,
+        Collision
+    };
+
     [Header("Components")]
     private Rigidbody2D _rigidBody;
     private Animator _animator;
@@ -23,21 +35,19 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float awakeDistance = 6f;
     [SerializeField] private Vector2 enemyHead = new(0, 0.75f);
     [SerializeField] private Vector2 headSize = new(1.5f, 0.5f);
+    [SerializeField] private float attackRange = 1.3f;
+    //[SerializeField] private float attackRangeOffset = 0.7f;
+    [SerializeField] private EnemyType type = EnemyType.Bird;
+    [SerializeField] private AttackList attackType = AttackList.Close;
 
     [Header("Conditionals")]
     [SerializeField] private bool isAwake;
-    [SerializeField] private string type;
-    private enum AttackList // your custom enumeration
-    {
-        Close,
-        Range,
-        Collision
-    };
-    [SerializeField] private AttackList attackType = AttackList.Close;
     [SerializeField] private bool headKill;
     [SerializeField] private bool isOnHead;
     [SerializeField] private bool isDead;
     [SerializeField] private bool receiveDamage;
+    private bool canAttack = true;
+    private bool isAttacking;
 
     private void Awake()
     {
@@ -56,7 +66,7 @@ public class EnemyController : MonoBehaviour
 
         if(isDead)
         {
-            if(type == "bird")
+            if(type == EnemyType.Bird)
             {
                 _rigidBody.gravityScale = 2;
                 _rigidBody.velocity = Vector2.down *3;
@@ -66,14 +76,41 @@ public class EnemyController : MonoBehaviour
         {
             if (distance < awakeDistance && !receiveDamage)
             {
-                if (type == "bird")
+                if (type == EnemyType.Bird)
                     _rigidBody.velocity = direction.normalized * movementSpeed;
-                else
-                    _rigidBody.velocity = new Vector2(direction.x, _rigidBody.velocity.y) * movementSpeed;
+                else if(type == EnemyType.Humanoid)
+                {
+                    bool isInRange = Physics2D.OverlapCircle(transform.position, attackRange, playerMask);
+                    if (isInRange)
+                    {
+                        _rigidBody.velocity = Vector2.zero;
+                        _animator.SetBool("Run", false);
+
+                        if (canAttack)
+                        {
+                            isAttacking = true;
+                            StartCoroutine(HumanoidAttack());
+                        }
+                    }
+                    else if(!isAttacking && !isInRange)
+                    {
+                        _animator.SetBool("Run", true);
+                        _rigidBody.velocity = new Vector2(direction.normalized.x * movementSpeed, _rigidBody.velocity.y) ;
+                    } 
+                    else if(isAttacking && !isInRange)
+                    {
+                        _rigidBody.velocity = Vector2.zero;
+                    }
+
+                }
             }
             else
             {
                 _rigidBody.velocity = Vector2.zero;
+                if (type == EnemyType.Humanoid)
+                {
+                    _animator.SetBool("Run", false);
+                }
             }
             ChangeDirection(direction.x);
         }
@@ -108,7 +145,7 @@ public class EnemyController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ground") && isDead)
         {
-            if(type == "bird")
+            if(type == EnemyType.Bird)
             {
                 _rigidBody.gravityScale = 0;
                 gameObject.GetComponent<CapsuleCollider2D>().enabled = false;
@@ -159,6 +196,16 @@ public class EnemyController : MonoBehaviour
         receiveDamage = false;
     }
 
+    private IEnumerator HumanoidAttack()
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(.2f);
+        _animator.SetTrigger("Attack");
+        yield return new WaitForSeconds(2.3f);
+        canAttack = true;
+        isAttacking = false;
+    }
+
     private void OnDrawGizmosSelected()
     {
         if(headKill)
@@ -169,6 +216,12 @@ public class EnemyController : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, awakeDistance);
+
+        if(attackType == AttackList.Close || attackType == AttackList.Range)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, attackRange);
+        }
     }
 
 }
