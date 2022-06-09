@@ -170,3 +170,5 @@ MonoBehaviour:
   type: bird
   headKill: 1
   isOnHead: 0
+  isDead: 0
+  receiveDamage: 0

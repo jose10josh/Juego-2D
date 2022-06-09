@@ -53,6 +53,10 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator ShakeCamera(float amp, float duration)
     {
+        if(gameState == GameState.loading)
+        {
+
+        }
         CinemachineBasicMultiChannelPerlin shake = _cinemachine.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         shake.m_AmplitudeGain = amp;
 

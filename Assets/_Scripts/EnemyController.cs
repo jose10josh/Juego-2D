@@ -7,7 +7,6 @@ public class EnemyController : MonoBehaviour
 {
     [Header("Components")]
     private Rigidbody2D _rigidBody;
-    private CapsuleCollider2D _collider;
     private Animator _animator;
 
     [Header("GameObjects")]
@@ -28,9 +27,17 @@ public class EnemyController : MonoBehaviour
     [Header("Conditionals")]
     [SerializeField] private bool isAwake;
     [SerializeField] private string type;
+    private enum AttackList // your custom enumeration
+    {
+        Close,
+        Range,
+        Collision
+    };
+    [SerializeField] private AttackList attackType = AttackList.Close;
     [SerializeField] private bool headKill;
     [SerializeField] private bool isOnHead;
     [SerializeField] private bool isDead;
+    [SerializeField] private bool receiveDamage;
 
     private void Awake()
     {
@@ -53,20 +60,11 @@ public class EnemyController : MonoBehaviour
             {
                 _rigidBody.gravityScale = 2;
                 _rigidBody.velocity = Vector2.down *3;
-
-                //Debug.Log(_rigidBody.velocity);
-
-                //if (_rigidBody.velocity.y == 0)
-                //{
-                //    Debug.Log("Is on GRound");
-                //    _rigidBody.Sleep();
-
-                //}
             }
         }
         else
         {
-            if (distance < awakeDistance)
+            if (distance < awakeDistance && !receiveDamage)
             {
                 if (type == "bird")
                     _rigidBody.velocity = direction.normalized * movementSpeed;
@@ -97,16 +95,29 @@ public class EnemyController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            isOnHead = Physics2D.OverlapBox((Vector2)transform.position + enemyHead, headSize, 0f, playerMask);
+            if(headKill)
+                isOnHead = Physics2D.OverlapBox((Vector2)transform.position + enemyHead, headSize, 0f, playerMask);
 
             if (isOnHead && headKill)
                 Destroy(gameObject);
-            else
+            else if(attackType == AttackList.Collision)
+            {
                 DealPlayerDamage();
+            }
+        }
+
+        if (collision.gameObject.CompareTag("Ground") && isDead)
+        {
+            if(type == "bird")
+            {
+                _rigidBody.gravityScale = 0;
+                gameObject.GetComponent<CapsuleCollider2D>().enabled = false;
+                Invoke("DestroyEnemy", 2f);
+                this.enabled = false;
+            }
         }
         
     }
-
     private void DealPlayerDamage()
     {
         _rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
@@ -118,6 +129,7 @@ public class EnemyController : MonoBehaviour
 
         gameManager.ReceiveDamage(damage);
     }
+
 
     public void ReceiveDamage(float damage)
     {
@@ -131,11 +143,20 @@ public class EnemyController : MonoBehaviour
         } 
         else
         {
+            Debug.Log("Receive Damaga");
+            receiveDamage = true;
+            _animator.SetTrigger("ReceiveDamage");
+            Invoke("StopReceiveDamage", 0.16f);
         }
     }
     private void DestroyEnemy()
     {
         Destroy(gameObject);
+    }
+
+    private void StopReceiveDamage()
+    {
+        receiveDamage = false;
     }
 
     private void OnDrawGizmosSelected()
