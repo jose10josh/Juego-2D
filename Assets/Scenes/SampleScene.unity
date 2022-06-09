@@ -323,6 +323,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1894304530622300753, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
+      propertyPath: attackType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1894304530622300753, guid: e49ac7c8438c0314bb5d4adcb55ec8ab, type: 3}
       propertyPath: attackType.Array.data[0]
       value: collision
       objectReference: {fileID: 0}
@@ -449,7 +453,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.703125, y: 1}
+    m_SensorSize: {x: 1.7785715, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -5526,16 +5530,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   movementSpeed: 3.5
   health: 12
   damage: 3
   awakeDistance: 5
   enemyHead: {x: 0, y: 0}
   headSize: {x: 0, y: 0}
-  isAwake: 0
-  type: humanoid
+  attackRange: 1.3
+  type: 1
   attackType: 0
+  isAwake: 0
   headKill: 0
   isOnHead: 0
   isDead: 0
@@ -5576,7 +5581,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 6
 --- !u!212 &284042535
 SpriteRenderer:
   m_ObjectHideFlags: 0
