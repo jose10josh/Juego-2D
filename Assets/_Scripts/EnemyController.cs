@@ -39,6 +39,7 @@ public class EnemyController : MonoBehaviour
     //[SerializeField] private float attackRangeOffset = 0.7f;
     [SerializeField] private EnemyType type = EnemyType.Bird;
     [SerializeField] private AttackList attackType = AttackList.Close;
+    [SerializeField] private float attackDelay = 1.5f;
 
     [Header("Conditionals")]
     [SerializeField] private bool isAwake;
@@ -46,8 +47,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private bool isOnHead;
     [SerializeField] private bool isDead;
     [SerializeField] private bool receiveDamage;
-    private bool canAttack = true;
-    private bool isAttacking;
+    [SerializeField] private bool canAttack = true;
+    [SerializeField] private bool isAttacking;
 
     private void Awake()
     {
@@ -71,6 +72,10 @@ public class EnemyController : MonoBehaviour
                 _rigidBody.gravityScale = 2;
                 _rigidBody.velocity = Vector2.down *3;
             }
+            else if(type == EnemyType.Humanoid)
+            {
+                _rigidBody.velocity = Vector2.zero;
+            }
         }
         else
         {
@@ -89,7 +94,7 @@ public class EnemyController : MonoBehaviour
                         if (canAttack)
                         {
                             isAttacking = true;
-                            StartCoroutine(HumanoidAttack());
+                            Invoke("HumanoidAttack", 0.2f);
                         }
                     }
                     else if(!isAttacking && !isInRange)
@@ -155,11 +160,15 @@ public class EnemyController : MonoBehaviour
         }
         
     }
-    private void DealPlayerDamage()
+    public void DealPlayerDamage()
     {
-        _rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
+        int enemyForce = 7000;
+        if (type != EnemyType.Bird)
+            enemyForce = 3000;
 
-        int playerForce = 500;
+        _rigidBody.AddForce((transform.position - player.transform.position).normalized * enemyForce, ForceMode2D.Force);
+
+        int playerForce = 400;
         if (player.isOnGround)
             playerForce = 2000;
         player_rb.AddForce((player.transform.position - transform.position).normalized * playerForce, ForceMode2D.Force);
@@ -172,18 +181,25 @@ public class EnemyController : MonoBehaviour
     {
         health -= damage;
 
-        _rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
         if (health <= 0)
         {
             isDead = true;
-            _animator.SetBool("Die", true);
+            _animator.SetTrigger("Die");
+
+            if (type == EnemyType.Humanoid)
+            {
+                _rigidBody.gravityScale = 0;
+                gameObject.GetComponent<CapsuleCollider2D>().enabled = false;
+                Invoke("DestroyEnemy", 2f);
+                this.enabled = false;
+            }
         } 
         else
         {
-            Debug.Log("Receive Damaga");
+            _rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
+
             receiveDamage = true;
             _animator.SetTrigger("ReceiveDamage");
-            Invoke("StopReceiveDamage", 0.16f);
         }
     }
     private void DestroyEnemy()
@@ -196,14 +212,27 @@ public class EnemyController : MonoBehaviour
         receiveDamage = false;
     }
 
-    private IEnumerator HumanoidAttack()
+    private void HumanoidAttack()
     {
         canAttack = false;
-        yield return new WaitForSeconds(.2f);
-        _animator.SetTrigger("Attack");
-        yield return new WaitForSeconds(2.3f);
-        canAttack = true;
-        isAttacking = false;
+        _animator.SetBool("Attack", true);
+    }
+
+    //private IEnumerator HumanoidAttack()
+    //{
+    //    canAttack = false;
+    //    Debug.Log("Attak start");
+    //    yield return new WaitForSeconds(1.5f);
+    //    _animator.SetBool("Attack", true);
+    //    yield return new WaitForSeconds(attackDelay);
+    //    canAttack = true;
+    //    Debug.Log("Attak end");
+    //    isAttacking = false;
+        
+    //}
+    private void StopAttack()
+    {
+        _animator.SetBool("Attack", false);
     }
 
     private void OnDrawGizmosSelected()

@@ -11,5 +11,10 @@ public class AttackController : MonoBehaviour
         {
             collision.gameObject.GetComponent<EnemyController>().ReceiveDamage(swordDamage);
         }
+
+        if (collision.CompareTag("Player"))
+        {
+            transform.parent.GetComponent<EnemyController>().DealPlayerDamage();
+        }
     }
 }
