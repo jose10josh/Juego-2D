@@ -20,6 +20,7 @@ public class EnemyController : MonoBehaviour
     [Header("Components")]
     private Rigidbody2D _rigidBody;
     private Animator _animator;
+    [SerializeField] private GameObject _projectile;
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera cinemachine;
@@ -65,7 +66,7 @@ public class EnemyController : MonoBehaviour
         Vector2 direction = player.transform.position - transform.position;
         float distance = Vector2.Distance(transform.position, player.transform.position);
 
-        if(isDead)
+        if (isDead)
         {
             if(type == EnemyType.Bird)
             {
@@ -79,14 +80,14 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            if (distance < awakeDistance && !receiveDamage)
+            if (distance <= awakeDistance && !receiveDamage)
             {
                 if (type == EnemyType.Bird)
                     _rigidBody.velocity = direction.normalized * movementSpeed;
                 else if(type == EnemyType.Humanoid)
                 {
-                    bool isInRange = Physics2D.OverlapCircle(transform.position, attackRange, playerMask);
-                    if (isInRange)
+                    bool isInAttackRange = Physics2D.OverlapCircle(transform.position, attackRange, playerMask);
+                    if (isInAttackRange)
                     {
                         _rigidBody.velocity = Vector2.zero;
                         _animator.SetBool("Run", false);
@@ -94,15 +95,15 @@ public class EnemyController : MonoBehaviour
                         if (canAttack)
                         {
                             isAttacking = true;
-                            Invoke("HumanoidAttack", 0.2f);
+                            Invoke(nameof(EnemyAttack), 0.2f);
                         }
                     }
-                    else if(!isAttacking && !isInRange)
+                    else if(!isAttacking && !isInAttackRange)
                     {
                         _animator.SetBool("Run", true);
                         _rigidBody.velocity = new Vector2(direction.normalized.x * movementSpeed, _rigidBody.velocity.y) ;
                     } 
-                    else if(isAttacking && !isInRange)
+                    else if(isAttacking && !isInAttackRange)
                     {
                         _rigidBody.velocity = Vector2.zero;
                     }
@@ -166,7 +167,8 @@ public class EnemyController : MonoBehaviour
         if (type != EnemyType.Bird)
             enemyForce = 3000;
 
-        _rigidBody.AddForce((transform.position - player.transform.position).normalized * enemyForce, ForceMode2D.Force);
+        if(attackType != AttackList.Range)
+            _rigidBody.AddForce((transform.position - player.transform.position).normalized * enemyForce, ForceMode2D.Force);
 
         int playerForce = 400;
         if (player.isOnGround)
@@ -212,27 +214,27 @@ public class EnemyController : MonoBehaviour
         receiveDamage = false;
     }
 
-    private void HumanoidAttack()
+    private void EnemyAttack()
     {
         canAttack = false;
         _animator.SetBool("Attack", true);
     }
 
-    //private IEnumerator HumanoidAttack()
-    //{
-    //    canAttack = false;
-    //    Debug.Log("Attak start");
-    //    yield return new WaitForSeconds(1.5f);
-    //    _animator.SetBool("Attack", true);
-    //    yield return new WaitForSeconds(attackDelay);
-    //    canAttack = true;
-    //    Debug.Log("Attak end");
-    //    isAttacking = false;
-        
-    //}
     private void StopAttack()
     {
         _animator.SetBool("Attack", false);
+        isAttacking = false;
+        Invoke(nameof(EnableAttack), attackDelay);
+    }
+
+    private void EnableAttack()
+    {
+        canAttack = true;
+    }
+
+    private void EnableRangeAttack()
+    {
+        Instantiate(_projectile, gameObject.transform, false);
     }
 
     private void OnDrawGizmosSelected()
@@ -251,6 +253,8 @@ public class EnemyController : MonoBehaviour
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, attackRange);
         }
+
+        
     }
 
 }

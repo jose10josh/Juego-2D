@@ -143,7 +143,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7118834197688379561}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.19, y: 0.79, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -224,7 +224,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 6
+  m_Constraints: 4
 --- !u!70 &7118834197688379565
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -253,6 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f0d3c189b1c57445b19f33491c524a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _projectile: {fileID: 0}
   playerMask:
     serializedVersion: 2
     m_Bits: 256
@@ -265,11 +266,14 @@ MonoBehaviour:
   attackRange: 1.3
   type: 1
   attackType: 0
+  attackDelay: 0.7
   isAwake: 0
   headKill: 0
   isOnHead: 0
   isDead: 0
   receiveDamage: 0
+  canAttack: 1
+  isAttacking: 0
 --- !u!95 &7118834197688379563
 Animator:
   serializedVersion: 4
