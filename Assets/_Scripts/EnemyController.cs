@@ -134,6 +134,10 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Change enemy direction toward player
+    /// </summary>
+    /// <param name="directionX">direction toward player</param>
     private void ChangeDirection(float directionX)
     {
         if (directionX >= 0 && transform.eulerAngles.y == 180) //Look right
@@ -173,6 +177,10 @@ public class EnemyController : MonoBehaviour
         }
         
     }
+
+    /// <summary>
+    /// Deal player damage, add force to player and enemy in opposite directions depending on attack type
+    /// </summary>
     public void DealPlayerDamage()
     {
         int enemyForce = 7000;
@@ -192,7 +200,10 @@ public class EnemyController : MonoBehaviour
         gameManager.ReceiveDamage(damage);
     }
 
-
+    /// <summary>
+    /// Deal enemy damage, validate if health health and call destroy if <= 0
+    /// </summary>
+    /// <param name="damage">Damage to deal to enemy</param>
     public void ReceiveDamage(float damage)
     {
         health -= damage;
@@ -218,22 +229,35 @@ public class EnemyController : MonoBehaviour
             _animator.SetTrigger("ReceiveDamage");
         }
     }
+
+    /// <summary>
+    /// Destroy enemy from game
+    /// </summary>
     private void DestroyEnemy()
     {
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// Change enemy receiving damage bool
+    /// </summary>
     private void StopReceiveDamage()
     {
         receiveDamage = false;
     }
 
+    /// <summary>
+    /// Start enemy attack animation
+    /// </summary>
     private void EnemyAttack()
     {
         canAttack = false;
         _animator.SetBool("Attack", true);
     }
 
+    /// <summary>
+    /// Stop enemy attack animation and wait attackDelay to enable attack
+    /// </summary>
     private void StopAttack()
     {
         _animator.SetBool("Attack", false);
@@ -241,22 +265,32 @@ public class EnemyController : MonoBehaviour
         Invoke(nameof(EnableAttack), attackDelay);
     }
 
+    /// <summary>
+    /// Change enemy canAttack status
+    /// </summary>
     private void EnableAttack()
     {
         canAttack = true;
     }
 
+    /// <summary>
+    /// Instantiate ranger projectile in screen
+    /// </summary>
     private void EnableRangeAttack()
     {
         Instantiate(_projectile, gameObject.transform, false);
     }
 
+
+    /// <summary>
+    /// Validate if player is in field of view
+    /// </summary>
+    /// <param name="direction">Direction from enemy to player</param>
     private void ValidatePlayerIsInView(Vector2 direction)
     {
         RaycastHit2D rangerRayCast = Physics2D.Raycast(transform.position, direction, awakeDistance);
 
         Debug.DrawLine(transform.position, player.transform.position, Color.green);
-        Debug.Log(rangerRayCast);
         if (rangerRayCast.collider.CompareTag("Player"))
             isInView = true;
         else

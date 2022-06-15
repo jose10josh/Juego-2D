@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 124267405}
   m_Layer: 8
   m_Name: GroundCheck
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -375,7 +375,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 4.352174, y: 1}
+    m_SensorSize: {x: 1.777528, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -9039,7 +9039,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8896656891832163240, guid: 0e721a0d9ded47b4aadab47522cd5620, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.06
+      value: -9.03
       objectReference: {fileID: 0}
     - target: {fileID: 8896656891832163240, guid: 0e721a0d9ded47b4aadab47522cd5620, type: 3}
       propertyPath: m_LocalPosition.y
