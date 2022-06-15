@@ -50,6 +50,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private bool receiveDamage;
     [SerializeField] private bool canAttack = true;
     [SerializeField] private bool isAttacking;
+    [SerializeField] private bool isInView;
 
     private void Awake()
     {
@@ -65,6 +66,8 @@ public class EnemyController : MonoBehaviour
     {
         Vector2 direction = player.transform.position - transform.position;
         float distance = Vector2.Distance(transform.position, player.transform.position);
+
+        
 
         if (isDead)
         {
@@ -92,10 +95,19 @@ public class EnemyController : MonoBehaviour
                         _rigidBody.velocity = Vector2.zero;
                         _animator.SetBool("Run", false);
 
+
+                        if (attackType == AttackList.Range)
+                            ValidatePlayerIsInView(direction);
+
                         if (canAttack)
                         {
-                            isAttacking = true;
-                            Invoke(nameof(EnemyAttack), 0.2f);
+                            if(attackType == AttackList.Range && isInView)
+                            {
+                                isAttacking = true;
+                                Invoke(nameof(EnemyAttack), 0.2f);
+                            }
+                            else if(attackType == AttackList.Close)
+                                Invoke(nameof(EnemyAttack), 0.2f);
                         }
                     }
                     else if(!isAttacking && !isInAttackRange)
@@ -167,13 +179,15 @@ public class EnemyController : MonoBehaviour
         if (type != EnemyType.Bird)
             enemyForce = 3000;
 
-        if(attackType != AttackList.Range)
-            _rigidBody.AddForce((transform.position - player.transform.position).normalized * enemyForce, ForceMode2D.Force);
-
         int playerForce = 400;
         if (player.isOnGround)
             playerForce = 2000;
-        player_rb.AddForce((player.transform.position - transform.position).normalized * playerForce, ForceMode2D.Force);
+
+        if (attackType != AttackList.Range)
+        {
+            _rigidBody.AddForce((transform.position - player.transform.position).normalized * enemyForce, ForceMode2D.Force);
+            player_rb.AddForce((player.transform.position - transform.position).normalized * playerForce, ForceMode2D.Force);
+        }
 
         gameManager.ReceiveDamage(damage);
     }
@@ -235,6 +249,18 @@ public class EnemyController : MonoBehaviour
     private void EnableRangeAttack()
     {
         Instantiate(_projectile, gameObject.transform, false);
+    }
+
+    private void ValidatePlayerIsInView(Vector2 direction)
+    {
+        RaycastHit2D rangerRayCast = Physics2D.Raycast(transform.position, direction, awakeDistance);
+
+        Debug.DrawLine(transform.position, player.transform.position, Color.green);
+        Debug.Log(rangerRayCast);
+        if (rangerRayCast.collider.CompareTag("Player"))
+            isInView = true;
+        else
+            isInView = false;
     }
 
     private void OnDrawGizmosSelected()

@@ -10,6 +10,7 @@ public class ProjectileController : MonoBehaviour
     [Header("GameObjects")]
     private Rigidbody2D player_rb;
     private GameManager gameManager;
+    private EnemyController gameParent;
 
     [Header("Statistics")]
     [SerializeField] private float movementSpeed = 2f;
@@ -20,23 +21,36 @@ public class ProjectileController : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         player_rb = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
         gameManager = FindObjectOfType<GameManager>();
-        Debug.Log("Awake");
-
+        gameParent = transform.parent.GetComponent<EnemyController>();
         direction = player_rb.transform.position - transform.position;
+
+    }
+    private void Start()
+    {
+        transform.right = direction;
     }
 
     private void Update()
     {
-        _rigidBody.velocity = new Vector2(direction.normalized.x * movementSpeed, 0);
+        _rigidBody.velocity = direction.normalized * movementSpeed;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        
         if (collision.CompareTag("Player"))
         {
-            transform.parent.GetComponent<EnemyController>().DealPlayerDamage();
-            Destroy(gameObject);
+            gameParent.DealPlayerDamage();
         }
+
+        var isParent = gameParent == collision.GetComponent<EnemyController>();
+        if(collision.CompareTag("Ground") || (collision.CompareTag("Enemy") && !isParent) || collision.CompareTag("Player"))
+            Destroy(gameObject);
+    }
+
+    private void OnBecameInvisible()
+    {
+        Destroy(gameObject);
     }
 
 }
