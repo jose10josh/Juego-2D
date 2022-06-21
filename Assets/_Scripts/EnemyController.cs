@@ -41,6 +41,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private EnemyType type = EnemyType.Bird;
     [SerializeField] private AttackList attackType = AttackList.Close;
     [SerializeField] private float attackDelay = 1.5f;
+    [SerializeField] private float damageDelay = 1f;
 
     [Header("Conditionals")]
     [SerializeField] private bool isAwake;
@@ -92,7 +93,7 @@ public class EnemyController : MonoBehaviour
                     bool isInAttackRange = Physics2D.OverlapCircle(transform.position, attackRange, playerMask);
                     if (isInAttackRange)
                     {
-                        _rigidBody.velocity = Vector2.zero;
+                        _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
                         _animator.SetBool("Run", false);
 
 
@@ -101,9 +102,9 @@ public class EnemyController : MonoBehaviour
 
                         if (canAttack)
                         {
+                            isAttacking = true;
                             if(attackType == AttackList.Range && isInView)
                             {
-                                isAttacking = true;
                                 Invoke(nameof(EnemyAttack), 0.2f);
                             }
                             else if(attackType == AttackList.Close)
@@ -117,17 +118,21 @@ public class EnemyController : MonoBehaviour
                     } 
                     else if(isAttacking && !isInAttackRange)
                     {
-                        _rigidBody.velocity = Vector2.zero;
+                        _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
                     }
 
                 }
             }
             else
             {
-                _rigidBody.velocity = Vector2.zero;
                 if (type == EnemyType.Humanoid)
                 {
+                    _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
                     _animator.SetBool("Run", false);
+                } 
+                else
+                {
+                    _rigidBody.velocity = Vector2.zero;
                 }
             }
             ChangeDirection(direction.x);
@@ -183,19 +188,19 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     public void DealPlayerDamage()
     {
-        int enemyForce = 7000;
-        if (type != EnemyType.Bird)
-            enemyForce = 3000;
+        //int enemyForce = 7000;
+        //if (type != EnemyType.Bird)
+        //    enemyForce = 3000;
 
-        int playerForce = 400;
-        if (player.isOnGround)
-            playerForce = 2000;
+        //int playerForce = 400;
+        //if (player.isOnGround)
+        //    playerForce = 2000;
 
-        if (attackType != AttackList.Range)
-        {
-            _rigidBody.AddForce((transform.position - player.transform.position).normalized * enemyForce, ForceMode2D.Force);
-            player_rb.AddForce((player.transform.position - transform.position).normalized * playerForce, ForceMode2D.Force);
-        }
+        //if (attackType != AttackList.Range)
+        //{
+        //    _rigidBody.AddForce((transform.position - player.transform.position).normalized * enemyForce, ForceMode2D.Force);
+        //    player_rb.AddForce((player.transform.position - transform.position).normalized * playerForce, ForceMode2D.Force);
+        //}
 
         gameManager.ReceiveDamage(damage);
     }
@@ -223,10 +228,12 @@ public class EnemyController : MonoBehaviour
         } 
         else
         {
-            _rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
+            //_rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
 
             receiveDamage = true;
-            _animator.SetTrigger("ReceiveDamage");
+            _animator.SetBool("ReceiveDamage", true);
+            _animator.SetTrigger("Damage");
+            Invoke("StopReceiveDamage", damageDelay);
         }
     }
 
@@ -243,6 +250,8 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     private void StopReceiveDamage()
     {
+        Debug.Log("Stop Damage");
+        _animator.SetBool("ReceiveDamage", false);
         receiveDamage = false;
     }
 

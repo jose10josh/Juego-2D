@@ -246,19 +246,15 @@ public class PlayerController : MonoBehaviour
     private void IsOnWall()
     {
         float extraWidth = 0.05f;
-        //RaycastHit2D raycastHitLeft = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.left, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
-        //RaycastHit2D raycastHitRight = Physics2D.Raycast(_capsuleCollider.bounds.center, Vector2.right, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
-        RaycastHit2D raycastHitLeft = Physics2D.BoxCast(_capsuleCollider.bounds.center, new Vector2(_capsuleCollider.bounds.size.x + extraWidth, _capsuleCollider.bounds.extents.y), 0f, Vector2.left, extraWidth, floorLayer);
-        RaycastHit2D raycastHitRight = Physics2D.BoxCast(_capsuleCollider.bounds.center, new Vector2(_capsuleCollider.bounds.size.x + extraWidth, _capsuleCollider.bounds.extents.y), 0f, Vector2.right, extraWidth, floorLayer);
+        RaycastHit2D raycastHitLeft = Physics2D.BoxCast(_capsuleCollider.bounds.center, new Vector2(_capsuleCollider.bounds.extents.x + extraWidth, _capsuleCollider.bounds.extents.y), 0f, Vector2.left, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
+        RaycastHit2D raycastHitRight = Physics2D.BoxCast(_capsuleCollider.bounds.center, new Vector2(_capsuleCollider.bounds.extents.x + extraWidth, _capsuleCollider.bounds.extents.y), 0f, Vector2.right, _capsuleCollider.bounds.extents.x + extraWidth, floorLayer);
 
         Color rayColor = Color.red;
         if (raycastHitLeft.collider != null || raycastHitRight.collider != null)
             rayColor = Color.blue;
     
-        Debug.DrawRay(_capsuleCollider.bounds.center, Vector2.left * (_capsuleCollider.bounds.extents.x + extraWidth), rayColor);
-        Debug.DrawRay(_capsuleCollider.bounds.center, Vector2.right * (_capsuleCollider.bounds.extents.x + extraWidth), rayColor);
-        //Debug.DrawRay(_boxCollider.bounds.center - new Vector3(_boxCollider.bounds.extents.x, 0), Vector2.down * (_boxCollider.bounds.extents.y + extraHeight), rayColor);
-        //Debug.DrawRay(_boxCollider.bounds.center - new Vector3(_boxCollider.bounds.extents.x, _boxCollider.bounds.extents.y + extraHeight), Vector2.right * (_boxCollider.bounds.size.x), rayColor);
+        //Debug.DrawRay(_capsuleCollider.bounds.center, Vector2.left * (_capsuleCollider.bounds.extents.x + extraWidth), rayColor);
+        //Debug.DrawRay(_capsuleCollider.bounds.center, Vector2.right * (_capsuleCollider.bounds.extents.x + extraWidth), rayColor);
         isOnWall = raycastHitLeft.collider != null || raycastHitRight.collider != null;
     }
 
