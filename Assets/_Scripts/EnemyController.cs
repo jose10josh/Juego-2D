@@ -28,10 +28,11 @@ public class EnemyController : MonoBehaviour
     private Rigidbody2D player_rb;
     [SerializeField] private LayerMask playerMask;
     private GameManager gameManager;
+    private HealthBar healthbar;
 
     [Header("Statistics")]
     [SerializeField] private float movementSpeed = 3f;
-    [SerializeField] private float health = 9;
+    [SerializeField] public float health = 9;
     [SerializeField] private int damage = 2;
     [SerializeField] private float awakeDistance = 6f;
     [SerializeField] private Vector2 enemyHead = new(0, 0.75f);
@@ -61,14 +62,14 @@ public class EnemyController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         player_rb = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
         gameManager = FindObjectOfType<GameManager>();
+        healthbar = GetComponentInChildren<HealthBar>();
+        healthbar.SetMaxHealth(health);
     }
 
     void Update()
     {
         Vector2 direction = player.transform.position - transform.position;
         float distance = Vector2.Distance(transform.position, player.transform.position);
-
-        
 
         if (isDead)
         {
@@ -212,7 +213,7 @@ public class EnemyController : MonoBehaviour
     public void ReceiveDamage(float damage)
     {
         health -= damage;
-
+        healthbar.SetHealthBarValue(health);
         if (health <= 0)
         {
             isDead = true;

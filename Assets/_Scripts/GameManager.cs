@@ -22,16 +22,19 @@ public class GameManager : MonoBehaviour
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera _cinemachine;
+    private HealthBar healthbar;
 
     private void Awake()
     {
         _cinemachine = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
+        healthbar = GetComponentInChildren<HealthBar>();
+        healthbar.SetMaxHealth(health);
     }
 
     public void ReceiveDamage(float damage)
     {
         health -= damage;
-
+        healthbar.SetHealthBarValue(health);
         if (health <= 0)
         {
             gameState = GameState.gameOver;
