@@ -7,6 +7,13 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
+    private enum WeaponType
+    {
+        Empty,
+        Sword,
+        Bow
+    }
+
     [Header("Components")]
     private Rigidbody2D _rigidBody;
     private Animator _animator;
@@ -21,6 +28,7 @@ public class PlayerController : MonoBehaviour
     private readonly float jumpForce = 7;
     private readonly float rollForce = 1.5f;
     private Vector2 playerDirection = Vector2.right;
+    private WeaponType _weaponType = WeaponType.Empty;
     
 
     [Header("Conditionals")]
@@ -207,11 +215,9 @@ public class PlayerController : MonoBehaviour
 
     private void Attack(Vector2 direction)
     {
-        if (Input.GetButtonDown("Fire1") && !isRolling && !isAttacking)
+        if (Input.GetButtonDown("Fire1") && !isRolling && !isAttacking && !isClimbing)
         {
             isAttacking = true;
-            //_animator.SetFloat("AttackX", direction.x);
-            //_animator.SetFloat("AttackY", direction.y);
 
             int attackDirection = 0;
             if(Input.GetKey(KeyCode.C))
@@ -258,25 +264,32 @@ public class PlayerController : MonoBehaviour
         isOnWall = raycastHitLeft.collider != null || raycastHitRight.collider != null;
     }
 
+    public void ChangePlayerWeapon(int weapon)
+    {
+        //var layerIndex = weapon switch
+        //{
+        //    2 => _animator.GetLayerIndex("BowLayer") ,
+        //    1 => _animator.GetLayerIndex("SwordLayer"),
+        //    _ => _animator.GetLayerIndex("NoWeaponLayer"),
+        //};
+        int layerIndex;
 
-    #region Old functions
-    //[Header("Collisions")]
-    //private Vector2 playerFeet = new(0, -0.65f);
-    //private readonly float radioCollider = 0.2f;
-    //[SerializeField]
-    //private LayerMask floorLayer;
-
-    //Course functions to check on ground
-    //private void VerifyIsInGround ()
-    //{
-    //    bool inGround = Physics2D.OverlapCircle((Vector2)transform.position + playerFeet, radioCollider, floorLayer);
-    //    Debug.Log($"Is en ground: {inGround}");
-    //    if (inGround)
-    //    {
-    //        jumpCount = 1;
-    //    }
-    //}
-
-
-    #endregion
+        _animator.SetLayerWeight((int)_weaponType, 0);
+        switch (weapon)
+        {
+            case 2:
+                layerIndex = _animator.GetLayerIndex("BowLayer");
+                _weaponType = WeaponType.Bow;
+                break;
+            case 1:
+                layerIndex = _animator.GetLayerIndex("SwordLayer");
+                _weaponType = WeaponType.Sword;
+                break;
+            default:
+                layerIndex = _animator.GetLayerIndex("NoWeaponLayer");
+                _weaponType = WeaponType.Empty;
+                break;
+        }
+        _animator.SetLayerWeight(layerIndex, 1);
+    }
 }

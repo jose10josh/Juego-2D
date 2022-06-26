@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    private enum EnemyType // your custom enumeration
+    private enum EnemyType 
     {
         Bird,
         Humanoid
     };
-    private enum AttackList // your custom enumeration
+    private enum AttackList 
     {
         Close,
         Range,
