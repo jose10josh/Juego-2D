@@ -8,43 +8,35 @@ public class ProjectileController : MonoBehaviour
     private Rigidbody2D _rigidBody;
 
     [Header("GameObjects")]
-    private Rigidbody2D player_rb;
-    private GameManager gameManager;
-    private EnemyController gameParent;
 
     [Header("Statistics")]
     [SerializeField] private float movementSpeed = 2f;
-    private Vector2 direction;
+    private Vector2 direction = Vector2.zero;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
-        player_rb = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
-        gameManager = FindObjectOfType<GameManager>();
-        gameParent = transform.parent.GetComponent<EnemyController>();
-        direction = player_rb.transform.position - transform.position;
-
-    }
-    private void Start()
-    {
-        transform.right = direction;
     }
 
     private void Update()
     {
+        Debug.Log($"Direction {direction}");
         _rigidBody.velocity = direction.normalized * movementSpeed;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
-        if (collision.CompareTag("Player"))
+        //TODO: Move player projectile damage variable to player controller
+        if (collision.CompareTag("Player") && !transform.parent.CompareTag("Player"))
         {
-            gameParent.DealPlayerDamage();
+            transform.parent.GetComponent<EnemyController>().DealPlayerDamage();
+        }
+        else if (collision.CompareTag("Enemy") && !transform.parent.CompareTag("Enemy"))
+        {
+            collision.GetComponent<EnemyController>().ReceiveDamage(2);
         }
 
-        var isParent = gameParent == collision.GetComponent<EnemyController>();
-        if(collision.CompareTag("Ground") || (collision.CompareTag("Enemy") && !isParent) || collision.CompareTag("Player"))
+        if (collision.CompareTag("Ground") || (collision.CompareTag("Enemy") && !transform.parent.CompareTag("Enemy")) || (collision.CompareTag("Player") && !transform.parent.CompareTag("Player")) )
             Destroy(gameObject);
     }
 
@@ -53,4 +45,10 @@ public class ProjectileController : MonoBehaviour
         Destroy(gameObject);
     }
 
+
+    public void ShootProjectile(Vector2 newDirection)
+    {
+        direction = newDirection;
+        transform.right = newDirection;
+    }
 }

@@ -288,7 +288,9 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     private void EnableRangeAttack()
     {
-        Instantiate(_projectile, gameObject.transform, false);
+        var newArrow = Instantiate(_projectile, gameObject.transform, false);
+        var direction = player.transform.position - transform.position;
+        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction);
     }
 
 

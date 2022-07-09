@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private Animator _animator;
     private CapsuleCollider2D _capsuleCollider;
+    [SerializeField] private GameObject _projectile;
 
     [Header("GameObjects")]
     [SerializeField] private LayerMask floorLayer;
@@ -220,7 +221,20 @@ public class PlayerController : MonoBehaviour
             isAttacking = true;
             _animator.SetBool("Attack", true);
 
+            if (_weaponType == WeaponType.Bow)
+            {
+                EnableRangeAttack(direction);
+            }
         }
+    }
+
+    /// <summary>
+    /// Instantiate ranger projectile in screen and set projectile direction
+    /// </summary>
+    private void EnableRangeAttack(Vector2 direction)
+    {
+        var newArrow = Instantiate(_projectile, gameObject.transform, false);
+        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction);
     }
 
     private Vector2 AttackDirection(Vector2 moveDir, Vector2 rawDir)
@@ -257,12 +271,6 @@ public class PlayerController : MonoBehaviour
 
     public void ChangePlayerWeapon(int weapon)
     {
-        //var layerIndex = weapon switch
-        //{
-        //    2 => _animator.GetLayerIndex("BowLayer") ,
-        //    1 => _animator.GetLayerIndex("SwordLayer"),
-        //    _ => _animator.GetLayerIndex("NoWeaponLayer"),
-        //};
         int layerIndex;
 
         _animator.SetLayerWeight((int)_weaponType, 0);
