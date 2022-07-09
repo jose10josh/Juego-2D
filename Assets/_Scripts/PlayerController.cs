@@ -215,18 +215,9 @@ public class PlayerController : MonoBehaviour
 
     private void Attack(Vector2 direction)
     {
-        if (Input.GetButtonDown("Fire1") && !isRolling && !isAttacking && !isClimbing)
+        if (Input.GetButtonDown("Fire1") && !isRolling && !isAttacking && !isClimbing && (_weaponType == WeaponType.Bow || _weaponType == WeaponType.Sword))
         {
             isAttacking = true;
-
-            int attackDirection = 0;
-            if(Input.GetKey(KeyCode.C))
-                attackDirection = 1;
-            else if (!isOnGround)
-                attackDirection = 2;
-
-
-            _animator.SetFloat("SwordAttack", attackDirection);
             _animator.SetBool("Attack", true);
 
         }
