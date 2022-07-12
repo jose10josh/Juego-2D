@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ProjectileController : MonoBehaviour
@@ -12,6 +10,7 @@ public class ProjectileController : MonoBehaviour
     [Header("Statistics")]
     [SerializeField] private float movementSpeed = 2f;
     private Vector2 direction = Vector2.zero;
+    private string isParent;
 
     private void Awake()
     {
@@ -20,23 +19,22 @@ public class ProjectileController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log($"Direction {direction}");
         _rigidBody.velocity = direction.normalized * movementSpeed;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //TODO: Move player projectile damage variable to player controller
-        if (collision.CompareTag("Player") && !transform.parent.CompareTag("Player"))
+        if (collision.CompareTag("Player") && isParent != "Player")
         {
             transform.parent.GetComponent<EnemyController>().DealPlayerDamage();
         }
-        else if (collision.CompareTag("Enemy") && !transform.parent.CompareTag("Enemy"))
+        else if (collision.CompareTag("Enemy") && isParent != "Enemy")
         {
             collision.GetComponent<EnemyController>().ReceiveDamage(2);
         }
 
-        if (collision.CompareTag("Ground") || (collision.CompareTag("Enemy") && !transform.parent.CompareTag("Enemy")) || (collision.CompareTag("Player") && !transform.parent.CompareTag("Player")) )
+        if (collision.CompareTag("Ground") || (collision.CompareTag("Enemy") && isParent != "Enemy") || (collision.CompareTag("Player") && isParent != "Player") )
             Destroy(gameObject);
     }
 
@@ -46,8 +44,9 @@ public class ProjectileController : MonoBehaviour
     }
 
 
-    public void ShootProjectile(Vector2 newDirection)
+    public void ShootProjectile(Vector2 newDirection, string parent)
     {
+        isParent = parent;
         direction = newDirection;
         transform.right = newDirection;
     }

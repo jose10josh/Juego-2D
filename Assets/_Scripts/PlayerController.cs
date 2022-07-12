@@ -233,8 +233,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void EnableRangeAttack(Vector2 direction)
     {
-        var newArrow = Instantiate(_projectile, gameObject.transform, false);
-        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction);
+        var newArrow = Instantiate(_projectile, gameObject.transform.position, _projectile.transform.rotation);
+        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction, "Player");
     }
 
     private Vector2 AttackDirection(Vector2 moveDir, Vector2 rawDir)
