@@ -1,6 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,16 +20,20 @@ public class GameManager : MonoBehaviour
 
     [Header("Statistics")]
     [SerializeField] private float health = 20f;
+    private int score;
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera _cinemachine;
     private HealthBar healthbar;
+    private TextMeshProUGUI coinCount;
 
     private void Awake()
     {
         _cinemachine = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
         healthbar = GetComponentInChildren<HealthBar>();
         healthbar.SetMaxHealth(health);
+
+        coinCount = GameObject.Find("MoneyText").GetComponent<TextMeshProUGUI>();
     }
 
     public void ReceiveDamage(float damage)
@@ -66,5 +71,26 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
 
         shake.m_AmplitudeGain = 0;
+    }
+
+    public void UpdateCoinCount(int value)
+    {
+        score += value;
+        coinCount.text = $"Coins: {score}";
+    }
+
+    /// <summary>
+    /// Start new game
+    /// </summary>
+    public void StartGame()
+    {
+        UpdateCoinCount(0);
+        coinCount.gameObject.SetActive(true);
+        gameState = GameState.inGame;
+    }
+
+    private void Start()
+    {
+        StartGame();
     }
 }
