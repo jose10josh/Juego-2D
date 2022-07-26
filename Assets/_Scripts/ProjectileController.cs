@@ -6,15 +6,18 @@ public class ProjectileController : MonoBehaviour
     private Rigidbody2D _rigidBody;
 
     [Header("GameObjects")]
+    private GameManager gamemanager;
 
     [Header("Statistics")]
     [SerializeField] private float movementSpeed = 2f;
     private Vector2 direction = Vector2.zero;
     private string isParent;
+    private float damage;
 
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
+        gamemanager = FindObjectOfType<GameManager>();
     }
 
     private void Update()
@@ -27,11 +30,11 @@ public class ProjectileController : MonoBehaviour
         //TODO: Move player projectile damage variable to player controller
         if (collision.CompareTag("Player") && isParent != "Player")
         {
-            transform.parent.GetComponent<EnemyController>().DealPlayerDamage();
+            gamemanager.ReceiveDamage(damage);
         }
         else if (collision.CompareTag("Enemy") && isParent != "Enemy")
         {
-            collision.GetComponent<EnemyController>().ReceiveDamage(2);
+            collision.GetComponent<EnemyController>().ReceiveDamage(damage);
         }
 
         if (collision.CompareTag("Ground") || (collision.CompareTag("Enemy") && isParent != "Enemy") || (collision.CompareTag("Player") && isParent != "Player") )
@@ -44,8 +47,9 @@ public class ProjectileController : MonoBehaviour
     }
 
 
-    public void ShootProjectile(Vector2 newDirection, string parent)
+    public void ShootProjectile(Vector2 newDirection, string parent, float dmg)
     {
+        damage = dmg;
         isParent = parent;
         direction = newDirection;
         transform.right = newDirection;

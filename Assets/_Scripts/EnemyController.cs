@@ -85,7 +85,7 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            if (distance <= awakeDistance && !receiveDamage)
+            if (distance <= awakeDistance)
             {
                 if (type == EnemyType.Bird)
                     _rigidBody.velocity = direction.normalized * movementSpeed;
@@ -212,8 +212,10 @@ public class EnemyController : MonoBehaviour
     /// <param name="damage">Damage to deal to enemy</param>
     public void ReceiveDamage(float damage)
     {
+        Debug.Log("Damage");
         health -= damage;
         healthbar.SetHealthBarValue(health);
+        StartCoroutine(DamageAnimation());
         if (health <= 0)
         {
             isDead = true;
@@ -231,11 +233,27 @@ public class EnemyController : MonoBehaviour
         {
             //_rigidBody.AddForce((transform.position - player.transform.position).normalized * 7000, ForceMode2D.Force);
 
-            receiveDamage = true;
-            _animator.SetBool("ReceiveDamage", true);
-            _animator.SetTrigger("Damage");
-            Invoke("StopReceiveDamage", damageDelay);
+            //receiveDamage = true;
+            //_animator.SetBool("ReceiveDamage", true);
+            //_animator.SetTrigger("Damage");
+            //Invoke("StopReceiveDamage", damageDelay);
         }
+    }
+
+    /// <summary>
+    /// Enable and disable renderer to create damage animation
+    /// </summary>
+    private IEnumerator DamageAnimation()
+    {
+        float delay = 0.1f;
+        var gamerenderer = GetComponent<Renderer>();
+        gamerenderer.enabled = false;
+        yield return new WaitForSeconds(delay);
+        gamerenderer.enabled = true;
+        yield return new WaitForSeconds(delay);
+        gamerenderer.enabled = false;
+        yield return new WaitForSeconds(delay);
+        gamerenderer.enabled = true;
     }
 
     /// <summary>
@@ -249,12 +267,12 @@ public class EnemyController : MonoBehaviour
     /// <summary>
     /// Change enemy receiving damage bool
     /// </summary>
-    private void StopReceiveDamage()
-    {
-        Debug.Log("Stop Damage");
-        _animator.SetBool("ReceiveDamage", false);
-        receiveDamage = false;
-    }
+    //private void StopReceiveDamage()
+    //{
+    //    Debug.Log("Stop Damage");
+    //    _animator.SetBool("ReceiveDamage", false);
+    //    receiveDamage = false;
+    //}
 
     /// <summary>
     /// Start enemy attack animation
@@ -290,7 +308,7 @@ public class EnemyController : MonoBehaviour
     {
         var newArrow = Instantiate(_projectile, gameObject.transform.position, _projectile.transform.rotation);
         var direction = player.transform.position - transform.position;
-        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction, "Enemy");
+        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction, "Enemy", damage);
     }
 
 

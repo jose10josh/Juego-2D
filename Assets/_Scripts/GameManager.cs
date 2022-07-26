@@ -20,16 +20,20 @@ public class GameManager : MonoBehaviour
 
     [Header("Statistics")]
     [SerializeField] private float health = 20f;
-    private int score;
+    private int _score;
+    private int Score { get { return _score; } set { _score = Mathf.Clamp(value, 0, 9999); } }
+    private bool isReceivingDamage = false;
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera _cinemachine;
     private HealthBar healthbar;
     private TextMeshProUGUI coinCount;
+    private PlayerController player;
 
     private void Awake()
     {
         _cinemachine = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         healthbar = GetComponentInChildren<HealthBar>();
         healthbar.SetMaxHealth(health);
 
@@ -40,6 +44,7 @@ public class GameManager : MonoBehaviour
     {
         health -= damage;
         healthbar.SetHealthBarValue(health);
+        StartCoroutine(DamageAnimation());
         if (health <= 0)
         {
             gameState = GameState.gameOver;
@@ -48,6 +53,25 @@ public class GameManager : MonoBehaviour
             //Destroy(gameObject);
         }
 
+    }
+
+    /// <summary>
+    /// Enable and disable renderer to create damage animation
+    /// </summary>
+    private IEnumerator DamageAnimation()
+    {
+        float delay = 0.1f;
+        var gamerenderer = player.GetComponent<Renderer>();
+        gamerenderer.enabled = false;
+        yield return new WaitForSeconds(delay);
+
+        gamerenderer.enabled = true;
+        yield return new WaitForSeconds(delay);
+
+        gamerenderer.enabled = false;
+        yield return new WaitForSeconds(delay);
+
+        gamerenderer.enabled = true;
     }
 
     /// <summary>
@@ -75,8 +99,8 @@ public class GameManager : MonoBehaviour
 
     public void UpdateCoinCount(int value)
     {
-        score += value;
-        coinCount.text = $"Coins: {score}";
+        Score += value;
+        coinCount.text = $"{Score}";
     }
 
     /// <summary>

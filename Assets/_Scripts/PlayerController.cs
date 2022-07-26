@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private readonly float rollForce = 1.5f;
     private Vector2 playerDirection = Vector2.right;
     private WeaponType _weaponType = WeaponType.Empty;
+    private float arrowDamage = 2;
     
 
     [Header("Conditionals")]
@@ -42,6 +43,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private bool isOnWall = false;
     private bool isClimbing = false;
+    
 
     private void Awake()
     {
@@ -78,7 +80,6 @@ public class PlayerController : MonoBehaviour
         IsOnWall();
         StartClimbing(rawVerticalInput, verticalInput);
 
-        
     }
 
     private void StartClimbing(float rawVerticalInput, float verticalInput)
@@ -234,7 +235,7 @@ public class PlayerController : MonoBehaviour
     private void EnableRangeAttack(Vector2 direction)
     {
         var newArrow = Instantiate(_projectile, gameObject.transform.position, _projectile.transform.rotation);
-        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction, "Player");
+        newArrow.GetComponent<ProjectileController>().ShootProjectile(direction, "Player", arrowDamage);
     }
 
     private Vector2 AttackDirection(Vector2 moveDir, Vector2 rawDir)
