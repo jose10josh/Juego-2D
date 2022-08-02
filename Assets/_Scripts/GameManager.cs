@@ -19,10 +19,11 @@ public class GameManager : MonoBehaviour
     private GameState gameState;
 
     [Header("Statistics")]
-    [SerializeField] private float health = 20f;
+    public bool receivingDamage = false;
+    private float health = 20f;
+    private float damageDelay = 0.5f;
     private int _score;
     private int Score { get { return _score; } set { _score = Mathf.Clamp(value, 0, 9999); } }
-    private bool isReceivingDamage = false;
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera _cinemachine;
@@ -42,17 +43,26 @@ public class GameManager : MonoBehaviour
 
     public void ReceiveDamage(float damage)
     {
-        health -= damage;
-        healthbar.SetHealthBarValue(health);
-        StartCoroutine(DamageAnimation());
-        if (health <= 0)
+        
+        if (!receivingDamage)
         {
-            gameState = GameState.gameOver;
-            Debug.Log($"Game Over");
-            RestartGame();
-            //Destroy(gameObject);
+            receivingDamage = true;
+            health -= damage;
+            healthbar.SetHealthBarValue(health);
+            StartCoroutine(DamageAnimation());
+            Invoke("EnambleReceiveDamage", damageDelay);
+            if (health <= 0)
+            {
+                gameState = GameState.gameOver;
+                RestartGame();
+                //Destroy(gameObject);
+            }
         }
+    }
 
+    private void EnambleReceiveDamage()
+    {
+        receivingDamage = false;
     }
 
     /// <summary>

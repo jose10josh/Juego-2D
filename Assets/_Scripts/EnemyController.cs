@@ -42,7 +42,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private EnemyType type = EnemyType.Bird;
     [SerializeField] private AttackList attackType = AttackList.Close;
     [SerializeField] private float attackDelay = 1.5f;
-    [SerializeField] private float damageDelay = 1f;
+    //[SerializeField] private float damageDelay = 1f;
 
     [Header("Conditionals")]
     [SerializeField] private bool isAwake;
