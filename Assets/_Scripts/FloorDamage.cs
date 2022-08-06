@@ -17,8 +17,7 @@ public class FloorDamage : MonoBehaviour
         }
         else if (collision.CompareTag("Enemy"))
         {
-            var enemy = collision.GetComponent<EnemyController>();
-            enemy.ReceiveDamage(100);
+            Destroy(collision.gameObject);
         }
     }
 

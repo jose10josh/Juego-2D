@@ -20,10 +20,10 @@ public class GameManager : MonoBehaviour
 
     [Header("Statistics")]
     public bool receivingDamage = false;
-    private float health = 20f;
+    [SerializeField] private float health = 50f;
     private float damageDelay = 0.5f;
-    private int _score;
-    private int Score { get { return _score; } set { _score = Mathf.Clamp(value, 0, 9999); } }
+    private float _score;
+    private float Score { get { return _score; } set { _score = Mathf.Clamp(value, 0, 9999); } }
 
     [Header("GameObjects")]
     private CinemachineVirtualCamera _cinemachine;
@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
         shake.m_AmplitudeGain = 0;
     }
 
-    public void UpdateCoinCount(int value)
+    public void UpdateCoinCount(float value)
     {
         Score += value;
         coinCount.text = $"{Score}";

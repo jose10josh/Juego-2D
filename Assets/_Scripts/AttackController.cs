@@ -15,4 +15,10 @@ public class AttackController : MonoBehaviour
             transform.parent.GetComponent<EnemyController>().DealPlayerDamage();
         }
     }
+
+
+    public void ChangeSwordDamage(float extraDamage)
+    {
+        swordDamage *= extraDamage;
+    }
 }

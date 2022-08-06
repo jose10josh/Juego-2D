@@ -494,7 +494,7 @@ MonoBehaviour:
     m_Bits: 256
   movementSpeed: 2
   health: 5
-  damage: 2
+  damage: 5
   awakeDistance: 10
   enemyHead: {x: 0, y: 0.75}
   headSize: {x: 1.5, y: 0.5}
@@ -502,7 +502,6 @@ MonoBehaviour:
   type: 1
   attackType: 1
   attackDelay: 2
-  damageDelay: 1.5
   isAwake: 0
   headKill: 0
   isOnHead: 0

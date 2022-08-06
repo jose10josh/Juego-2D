@@ -6,14 +6,15 @@ public class CollectItem : MonoBehaviour
 {
     private enum ItemType
     {
-        Potion,
+        Health,
         Money,
-        PowerUp
+        Damage,
+        Speed
     }
 
     [Header("Statistics")]
     [SerializeField] private ItemType itemType;
-    [SerializeField] private int value;
+    [SerializeField] private float value;
 
     [Header("GameObjects")]
     private GameManager gameManager;
@@ -29,11 +30,25 @@ public class CollectItem : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            if(itemType == ItemType.Money)
+            if (itemType == ItemType.Money)
             {
                 gameManager.UpdateCoinCount(value);
-                Destroy(gameObject);
             }
+            else if (itemType == ItemType.Health)
+            {
+                gameManager.ReceiveDamage(-value);
+            }
+            else if (itemType == ItemType.Speed)
+            {
+
+            }
+            else if (itemType == ItemType.Damage)
+            {
+                var swordDamage = collision.transform.Find("SwordParticle1").GetComponent<AttackController>();
+                swordDamage.ChangeSwordDamage(value);
+            }
+
+            Destroy(gameObject);
         }
     }
 }
