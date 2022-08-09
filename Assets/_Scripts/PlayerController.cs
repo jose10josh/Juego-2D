@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject _projectile;
 
     [Header("GameObjects")]
-    [SerializeField] private LayerMask floorLayer;
+    private LayerMask floorLayer;
     private GameManager gameManager;
 
     [Header("Statistics")]
@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
     private readonly float rollForce = 1.5f;
     private Vector2 playerDirection = Vector2.right;
     private WeaponType _weaponType = WeaponType.Empty;
-    private float arrowDamage = 2;
+    [SerializeField]  private float arrowDamage = 2;
     
 
     [Header("Conditionals")]
@@ -40,7 +40,6 @@ public class PlayerController : MonoBehaviour
     public bool isOnGround = true;
     public bool isRolling = false;
     private bool isAttacking = false;
-    [SerializeField]
     private bool isOnWall = false;
     private bool isClimbing = false;
     
@@ -236,6 +235,11 @@ public class PlayerController : MonoBehaviour
     {
         var newArrow = Instantiate(_projectile, gameObject.transform.position, _projectile.transform.rotation);
         newArrow.GetComponent<ProjectileController>().ShootProjectile(direction, "Player", arrowDamage);
+    }
+
+    public void ChangePlayerDamage(float multiplier)
+    {
+        arrowDamage += multiplier;
     }
 
     private Vector2 AttackDirection(Vector2 moveDir, Vector2 rawDir)

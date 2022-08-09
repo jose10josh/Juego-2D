@@ -19,6 +19,6 @@ public class AttackController : MonoBehaviour
 
     public void ChangeSwordDamage(float extraDamage)
     {
-        swordDamage *= extraDamage;
+        swordDamage += extraDamage;
     }
 }

@@ -99,7 +99,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: 2
-  value: 2
+  value: 7
+  attackDuration: 4
 --- !u!61 &7925231074674248128
 BoxCollider2D:
   m_ObjectHideFlags: 0

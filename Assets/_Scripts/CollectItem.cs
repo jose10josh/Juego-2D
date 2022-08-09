@@ -15,6 +15,7 @@ public class CollectItem : MonoBehaviour
     [Header("Statistics")]
     [SerializeField] private ItemType itemType;
     [SerializeField] private float value;
+    [SerializeField] private float attackDuration = 4f;
 
     [Header("GameObjects")]
     private GameManager gameManager;
@@ -33,10 +34,12 @@ public class CollectItem : MonoBehaviour
             if (itemType == ItemType.Money)
             {
                 gameManager.UpdateCoinCount(value);
+                Destroy(gameObject);
             }
             else if (itemType == ItemType.Health)
             {
                 gameManager.ReceiveDamage(-value);
+                Destroy(gameObject);
             }
             else if (itemType == ItemType.Speed)
             {
@@ -44,11 +47,24 @@ public class CollectItem : MonoBehaviour
             }
             else if (itemType == ItemType.Damage)
             {
-                var swordDamage = collision.transform.Find("SwordParticle1").GetComponent<AttackController>();
+                
+                var swordDamage = player.transform.Find("SwordParticle1").GetComponent<AttackController>();
                 swordDamage.ChangeSwordDamage(value);
+                player.ChangePlayerDamage(value);
+
+                Invoke("ResetPlayerDamage", attackDuration);
+                gameObject.GetComponent<Renderer>().enabled = false;
+                gameObject.GetComponent<BoxCollider2D>().enabled = false;
             }
 
-            Destroy(gameObject);
         }
+    }
+
+    private void ResetPlayerDamage()
+    {
+        var swordDamage = player.transform.Find("SwordParticle1").GetComponent<AttackController>();
+        swordDamage.ChangeSwordDamage(-value);
+        player.ChangePlayerDamage(-value);
+        Destroy(gameObject);
     }
 }
